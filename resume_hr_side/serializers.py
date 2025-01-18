@@ -1,16 +1,22 @@
 from rest_framework import serializers
-from .models import User
+from .models import CustomUser , Student
 from django.contrib.auth.hashers import make_password
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer for user registration."""
-    password = serializers.CharField(write_only=True, min_length=6, required=True)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ["email", "name", "role", "password"]
-
+        model = CustomUser
+        fields = ['name', 'email', 'role', 'password']
+    
     def create(self, validated_data):
-        """Create a new user and hash their password."""
-        validated_data['password'] = make_password(validated_data['password'])
-        return User.objects.create(**validated_data)
+        password = validated_data.pop('password')
+        user = CustomUser.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+    
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ["id", "name", "email", "role"]
