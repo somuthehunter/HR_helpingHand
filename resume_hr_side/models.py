@@ -46,6 +46,7 @@ class CustomUser(AbstractBaseUser):
 class Professional(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     # Add fields specific to Professional role here
+    resume_content = models.TextField(null=True, blank=True)
     
 
     def __str__(self):

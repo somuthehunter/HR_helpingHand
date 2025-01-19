@@ -1,16 +1,12 @@
 import PyPDF2 as pdf
-import os
 import google.generativeai as genai
-from django.core.files.storage import FileSystemStorage
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated , AllowAny
 from .models import CustomUser , Student , Professional
-from django.http import JsonResponse
 from .serializers import UserRegistrationSerializer,UserSerializer
-from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 
 
@@ -218,6 +214,13 @@ class ResumeUploadAPIViewStudents(APIView):
                 return Response({"error": "Please upload a resume"}, status=400)
 
             resume_text = extract_pdf_text(uploaded_file)
+
+
+        #saving the resume content in the db
+            student = Student.objects.get(user = request.user)
+            student.resume_content = resume_text
+            student.save()
+            
 
         # AI Processing
             prompt = f"""

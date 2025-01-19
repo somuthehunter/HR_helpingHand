@@ -17,6 +17,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
     
 class UserSerializer(serializers.ModelSerializer):
+    resume_content = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
-        fields = ["id", "name", "email", "role"]
+        fields = ["id", "name", "email", "role", "resume_content"]
+
+    def get_resume_content(self, obj):
+        
+        student = getattr(obj, 'student', None)
+        return student.resume_content if student else None
